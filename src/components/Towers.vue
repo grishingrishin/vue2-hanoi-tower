@@ -56,16 +56,20 @@ export default {
             this.isDraggedOver = false;
         },
         dragEnd() {
-            const { nextColumn, towers, size } = this;
+            const { activeColumn, nextColumn, towers, size } = this;
+
             const lengthOfTargetColumn = towers[nextColumn].length;
+            const isDroped = activeColumn !== nextColumn && lengthOfTargetColumn < size;
 
-            if (lengthOfTargetColumn < size) {
-                const { activeColumn, draggable } = this;
-                this.towers[activeColumn].shift();
-                this.towers[nextColumn].unshift(draggable);
-            }
+            return isDroped ? this.push() : this.destroy();
+        },
+        push() {
+            const { activeColumn, nextColumn, draggable } = this;
 
-            return this.destroy();
+            this.towers[activeColumn].shift();
+            this.towers[nextColumn].unshift(draggable);
+
+            this.destroy();
         },
         destroy() {
             this.draggable = null;
@@ -146,9 +150,11 @@ export default {
     margin-top: 8px;
     background-color: #cd9575;
     border-radius: 2px;
+    pointer-events: none;
+    cursor: grabbing;
 }
 
 .tower__item[draggable] {
-    cursor: grabbing;
+    pointer-events: auto;
 }
 </style>
