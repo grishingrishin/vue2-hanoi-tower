@@ -6,9 +6,8 @@
                     :class="['towers__col', 'tower', { 'drag-and-drop': tower.length < 3 && isDraggedOver }]"
                     v-for="(tower, column) of towers"
                     :key="column"
-                    @dragenter="dragEnter($event, column)"
                 >
-                    <ul class="tower__list">
+                    <ul class="tower__list" @dragenter="dragEnter($event, column)">
                         <template v-for="(circle, index) of tower">
                             <li
                                 class="tower__item"
@@ -59,17 +58,17 @@ export default {
             const { activeColumn, nextColumn, towers, size } = this;
 
             const lengthOfTargetColumn = towers[nextColumn].length;
-            const isDroped = activeColumn !== nextColumn && lengthOfTargetColumn < size;
+            const isDropped = activeColumn !== nextColumn && lengthOfTargetColumn < size;
 
-            return isDroped ? this.push() : this.destroy();
+            return isDropped ? this.dropped() : this.destroy();
         },
-        push() {
+        dropped() {
             const { activeColumn, nextColumn, draggable } = this;
 
             this.towers[activeColumn].shift();
             this.towers[nextColumn].unshift(draggable);
 
-            this.destroy();
+            return this.destroy();
         },
         destroy() {
             this.draggable = null;
